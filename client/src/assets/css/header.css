@@ -42,6 +42,10 @@ a {
   align-items: center;
   padding-top: 10px;
 }
+.navbar-menu-container .myOrder{
+  padding-left: 10px;
+  padding-right: 10px;
+}
 .navbar-link {
   padding-left: 15px;
 }

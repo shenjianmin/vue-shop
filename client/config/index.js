@@ -31,14 +31,9 @@ module.exports = {
     autoOpenBrowser: true,
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
+    //此设置在一定程度上解决了跨域的问题，然后把所有的接口统一规范为一个入口，解决路由冲突的问题
     proxyTable: {
-      // '/users/*': {
-      //   target: 'http://localhost:3000'
-      // },
-      // '/goods/*': {
-      //   target: 'http://localhost:3000'
-      // },
-      '/api/**':{
+      '/api/**': {
         target: 'http://localhost:3000',
         pathRewrite: {
           '^/api': '/'

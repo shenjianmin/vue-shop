@@ -8,6 +8,7 @@
   overflow: hidden;
   display: inline-block;
   background: #f0f0f0;
+  user-select:none;  
 }
 .item-quantity .select-self-area{
   background:none;
@@ -19,4 +20,5 @@
   width: 30px;
   min-width: 30px;
   text-align: center;
+  user-select:none; 
 }

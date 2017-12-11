@@ -12,18 +12,16 @@
             <a href="javascript:void(0)" class="filterby stopPop" @click.stop="showFilterPop">Filter by</a>
           </div>
           <div class="accessory-result">
-            <!-- filter -->
             <div class="filter stopPop" id="filter" v-bind:class="{'filterby-show':filterBy}">
               <dl class="filter-price">
                 <dt>价格:</dt>
-                <dd><a href="javascript:void(0)" @click="setPriceFilter('all')" v-bind:class="{'cur':priceChecked=='all'}">所有</a></dd>
+                <dd><a href="javascript:void(0)" @click="setPriceFilter('all')" v-bind:class="{'cur':priceChecked=='all'}">All</a></dd>
                 <dd v-for="(item,index) in priceFilter">
                   <a href="javascript:void(0)" @click="setPriceFilter(index)" v-bind:class="{'cur':priceChecked==index}">{{item.startPrice}} - {{item.endPrice}}</a>
                 </dd>
               </dl>
             </div>
 
-            <!-- search result accessories list -->
             <div class="accessory-list-wrap">
               <div class="accessory-list col-4">
                 <ul>
@@ -72,7 +70,6 @@
           <router-link class="btn btn--m btn--red" href="javascript:;" to="/cart">查看购物车</router-link>
         </div>
       </modal>
-      <div class="md-overlay" v-show="overLayFlag" @click.stop="closePop"></div>
     </div>
 </template>
 <script>
@@ -86,40 +83,40 @@ export default {
   data () {
     return {
       goodsList: [],
-      sortFlag: true,
-      page: 1,
-      pageSize: 8,
-      busy: false,
-      loading: false,
-      mdShow: false,
-      mdShowCart: false,
+      sortFlag: true, // 调整商品排列方式为升序
+      page: 1, // 页码
+      pageSize: 8, // 页的大小
+      busy: false, // busy的布尔值来控制v-infinite-scroll是否触发
+      loading: false, // 控制懒加载的图片是否显示
+      mdShow: false, // 控制模态框是否显示
+      mdShowCart: false, // 提示是否成功添加到购物车
       priceFilter: [
         {
-          startPrice: '0.00',
+          startPrice: '￥0.00',
           endPrice: '100.00'
         },
         {
-          startPrice: '100.00',
+          startPrice: '￥100.00',
           endPrice: '500.00'
         },
         {
-          startPrice: '500.00',
+          startPrice: '￥500.00',
           endPrice: '1000.00'
         },
         {
-          startPrice: '1000.00',
+          startPrice: '￥1000.00',
           endPrice: '5000.00'
         }
       ],
       priceChecked: 'all', // 选中的价格过滤值
-      filterBy: false,
-      overLayFlag: false
+      filterBy: false // 货币过滤
     }
   },
   mounted () {
     this.getGoodList()
   },
   methods: {
+    // 添加商品到购物车
     addCart (proId) {
       this.$http.post('/goods/addcart', {productId: proId}).then(res => {
         res = res.data
@@ -131,16 +128,19 @@ export default {
         }
       })
     },
+    // 改变商品的排列顺序为升序或降序
     sortGoods () {
       this.sortFlag = !this.sortFlag
       this.page = 1
       this.getGoodList()
     },
+    // 改变价格的过滤值
     setPriceFilter (index) {
       this.priceChecked = index
       this.page = 1
       this.getGoodList()
     },
+    // get请求商品列表的api，并传入相关参数
     getGoodList (loadmoreFlag) {
       var params = {
         page: this.page,
@@ -162,11 +162,13 @@ export default {
         }
       })
     },
+    // 当滚到底部加载更多的商品数据
     loadMore () {
       this.busy = true
       this.page++
       this.getGoodList(true)
     },
+    // 关闭相关的模态框
     closeModal () {
       this.mdShow = false
       this.mdShowCart = false

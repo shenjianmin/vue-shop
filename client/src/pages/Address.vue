@@ -172,6 +172,7 @@ export default {
     Modal
   },
   computed: {
+    // 默认情况下只显示三个地址
     addressListFilter () {
       return this.addressList.slice(0, this.limit)
     }
@@ -181,13 +182,16 @@ export default {
   },
   methods: {
     init () {
+      // get请求地址列表的api
       this.$http.get('/users/addressList').then(res => {
         res = res.data
         if (res.status === '0') {
           this.addressList = res.result
           if (this.addressList < 1) return
+          // 第一个地址默认为选中状态
           this.selectedAddrId = this.addressList[0].addressId
           this.checkIndex = 0
+          // 如果将一个地址设置为默认地址，那么这个地址自动放在地址列表中第一个位置
           this.addressList.forEach((item, index) => {
             if (item.isDefault) {
               [this.addressList[0], this.addressList[index]] =
@@ -197,6 +201,7 @@ export default {
         }
       })
     },
+    // 添加新的地址
     addAddress () {
       this.$http.post('/users/addAddress', this.address)
         .then(res => {
@@ -204,11 +209,13 @@ export default {
           if (res.status === '0') {
             console.log('添加成功')
             this.closeModalAdd()
+            // 此方法会在你添加新地址后显示所有的地址
             this.limit = this.addressList.length + 1
             this.init()
           }
         })
     },
+    // 扩展显示出所有的地址或收回只显示三个地址
     expand () {
       if (this.limit > 3) {
         this.limit = 3
@@ -217,12 +224,15 @@ export default {
       }
       console.log(this.addressList.length)
     },
+    // 关闭删除地址模态框
     closeModal () {
       this.isMdShow = false
     },
+    // 关闭添加地址模态框
     closeModalAdd () {
       this.addShow = false
     },
+    // 删除地址
     delAddress () {
       this.$http
         .post('/users/delAddress', { addressId: this.addressId })
@@ -234,13 +244,16 @@ export default {
           }
         })
     },
+    // 确认删除地址
     delAddressConfirm (addressId) {
       this.addressId = addressId
       this.isMdShow = true
     },
+    // 添加新的地址确认
     addNewConfirm () {
       this.addShow = true
     },
+    // 设置为默认地址
     setDefault (addressId) {
       this.$http.post('/users/setDefault', { addressId }).then(res => {
         res = res.data

@@ -28,6 +28,7 @@ import './assets/css/product.css'
 // 使用Axios库，实际上就是给vue的实例原型上面添加一个$http和axios属性
 import apiConfig from '../config/api.config'
 Vue.use(VueAxios, axios)
+// 为Axios库设置请求数据的路径
 axios.defaults.baseURL = apiConfig.baseUrl
 // 使用无限滚动插件
 Vue.use(VueInfiniteScroll)

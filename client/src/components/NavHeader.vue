@@ -29,6 +29,8 @@
       <div class="navbar-right-container" style="display: flex;">
         <div class="navbar-menu-container">
           <span class="navbar-link" v-text="nickName" v-if="nickName"></span>
+          <router-link to="/orders" v-if="nickName"><span class="myOrder">|</span>我的订单</router-link>
+          <a href="javascript:void(0)" class="navbar-link" @click="registerModalFlag=true" v-if="!nickName">注册</a>
           <a href="javascript:void(0)" class="navbar-link" @click="loginModalFlag=true" v-if="!nickName">登录</a>
           <a href="javascript:void(0)" class="navbar-link" @click="logOut" v-else>退出</a>
           <div class="navbar-cart-container">
@@ -70,7 +72,38 @@
         </div>
       </div>
     </div>
-    <div class="md-overlay" v-if="loginModalFlag" @click="loginModalFlag=false"></div>
+    <div class="md-modal modal-msg md-modal-transition" v-bind:class="{'md-show':registerModalFlag}">
+      <div class="md-modal-inner">
+        <div class="md-top">
+          <div class="md-title">注册</div>
+          <button class="md-close" @click="registerModalFlag=false">Close</button>
+        </div>
+        <div class="md-content">
+          <div class="confirm-tips">
+            <div class="error-wrap">
+              <span class="error error-show" v-show="errorTip">用户名已存在或密码两次输入不一致</span>
+            </div>
+            <ul>
+              <li class="regi_form_input">
+                <i class="icon IconPeople"></i>
+                <input type="text" tabindex="1" name="regname" v-model="regName" class="regi_login_input regi_login_input_left" placeholder="用户名" data-type="loginname">
+              </li>
+              <li class="regi_form_input noMargin">
+                <i class="icon IconPwd"></i>
+                <input type="password" tabindex="2"  name="regpassword" v-model="regPwd" class="regi_login_input regi_login_input_left login-input-no input_text" placeholder="设置密码">
+              </li>
+              <li class="regi_form_input noMargin">
+                <i class="icon IconPwd"></i>
+                <input type="password" tabindex="3"  name="regpassword_re" v-model="regPwd_r" class="regi_login_input regi_login_input_left login-input-no input_text" placeholder="确认密码" @keyup.enter="register">
+              </li>
+            </ul>
+          </div>
+          <div class="login-wrap">
+            <a href="javascript:;" class="btn-login" @click="register">注  册</a>
+          </div>
+        </div>
+      </div>
+    </div>
   </header>
 </template>
 
@@ -78,13 +111,17 @@
 import '../assets/css/header.css'
 import '../assets/css/login.css'
 import { mapState } from 'vuex'
-export default{
+export default {
   data () {
     return {
-      userName: 'admin',
+      userName: 'weimin',
       userPwd: '123456',
+      regName: '',
+      regPwd: '',
+      regPwd_r: '',
       errorTip: false,
-      loginModalFlag: false
+      loginModalFlag: false,
+      registerModalFlag: false
     }
   },
   computed: {
@@ -94,6 +131,7 @@ export default{
     this.checkLogin()
   },
   methods: {
+    // 检查是否登录
     checkLogin () {
       this.$http.get('/users/checkLogin').then(response => {
         var res = response.data
@@ -108,26 +146,51 @@ export default{
         }
       })
     },
+    // 登录
     login () {
       if (!this.userName || !this.userPwd) {
         this.errorTip = true
         return
       }
-      this.$http.post('/users/login', {
-        userName: this.userName,
-        userPwd: this.userPwd
-      }).then(response => {
-        let res = response.data
-        if (res.status === '0') {
-          this.errorTip = false
-          this.loginModalFlag = false
-          this.$store.commit('updateUserInfo', res.result.userName)
-          this.getCartCount()
-        } else {
-          this.errorTip = true
-        }
-      })
+      this.$http
+        .post('/users/login', {
+          userName: this.userName,
+          userPwd: this.userPwd
+        })
+        .then(response => {
+          let res = response.data
+          if (res.status === '0') {
+            this.errorTip = false
+            this.loginModalFlag = false
+            this.$store.commit('updateUserInfo', res.result.userName)
+            this.getCartCount()
+          } else {
+            this.errorTip = true
+          }
+        })
     },
+    // 注册
+    register () {
+      if (!this.regName || !this.regPwd || !this.regPwd_r) {
+        this.errorTip = true
+        return
+      }
+      this.$http.post('/users/register', {
+        regName: this.regName,
+        regPwd: this.regPwd,
+        regPwd_r: this.regPwd_r
+      })
+        .then(response => {
+          let res = response.data
+          if (res.status === '0') {
+            this.errorTip = false
+            this.registerModalFlag = false
+          } else {
+            this.errorTip = true
+          }
+        })
+    },
+    // 登出
     logOut () {
       this.$http.post('/users/logout').then(response => {
         let res = response.data
@@ -137,6 +200,7 @@ export default{
         }
       })
     },
+    // 显示购物车中商品的数量
     getCartCount () {
       this.$http.get('users/getCartCount').then(res => {
         res = res.data

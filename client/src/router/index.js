@@ -11,6 +11,8 @@ import Address from '@/pages/Address'
 import OrderConfirm from '@/pages/OrderConfirm'
 // 引入订单成功组件
 import OrderSuccess from '@/pages/OrderSuccess'
+// 引入订单列表组件
+import Orders from '@/pages/Orders'
 // 使用VueRouter组件
 Vue.use(Router)
 // 导出VueRouter的实例
@@ -31,6 +33,11 @@ export default new Router({
       path: '/address',
       name: 'Address',
       component: Address
+    },
+    {
+      path: '/orders',
+      name: 'Orders',
+      component: Orders
     },
     {
       path: '/orderConfirm',
